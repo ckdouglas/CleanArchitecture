@@ -1,0 +1,11 @@
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/bin/Debug/net8.0/BuberDinner.Contracts.deps.json
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/bin/Debug/net8.0/BuberDinner.Contracts.dll
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/bin/Debug/net8.0/BuberDinner.Contracts.pdb
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/BuberDinner.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/BuberDinner.Contracts.AssemblyInfoInputs.cache
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/BuberDinner.Contracts.AssemblyInfo.cs
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/BuberDinner.Contracts.csproj.CoreCompileInputs.cache
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/BuberDinner.Contracts.dll
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/refint/BuberDinner.Contracts.dll
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/BuberDinner.Contracts.pdb
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/BuberDinner/BuberDinner.Contracts/obj/Debug/net8.0/ref/BuberDinner.Contracts.dll
