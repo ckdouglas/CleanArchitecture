@@ -1,0 +1,11 @@
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/bin/Debug/net8.0/CleanArchitecture.Contracts.deps.json
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/bin/Debug/net8.0/CleanArchitecture.Contracts.dll
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/bin/Debug/net8.0/CleanArchitecture.Contracts.pdb
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/CleanArchitecture.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/CleanArchitecture.Contracts.AssemblyInfoInputs.cache
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/CleanArchitecture.Contracts.AssemblyInfo.cs
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/CleanArchitecture.Contracts.csproj.CoreCompileInputs.cache
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/CleanArchitecture.Contracts.dll
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/refint/CleanArchitecture.Contracts.dll
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/CleanArchitecture.Contracts.pdb
+/Users/douglasmuthoni/Desktop/Learn/Clean-Architecture/CleanArchitecture/CleanArchitecture.Contracts/obj/Debug/net8.0/ref/CleanArchitecture.Contracts.dll
