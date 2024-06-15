@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using CleanArchitecture.Application.Common.Errors;
 using CleanArchitecture.Application.Common.Interfaces.Authentication;
 using CleanArchitecture.Application.Common.Interfaces.Persistence;
+using CleanArchitecture.Application.Errors;
 using CleanArchitecture.Domain.Entities;
+using FluentResults;
 
 namespace CleanArchitecture.Application.Services.Authentication;
+
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
@@ -18,14 +22,16 @@ public class AuthenticationService : IAuthenticationService
         _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
     }
-    public AuthenticationResults Login(string email, string password)
+    public Result<AuthenticationResults> Login(string email, string password)
     {
         //1. validate user exists
         if (_userRepository.GetUserByEmail(email) is not User user)
-            throw new Exception("User " + email + " does not exist");
+            return Result.Fail<AuthenticationResults>(new[] { new InvalidCredentialsError() }); //can pass one or more errors
+
         //2. validate password is correct
         if (user.Password != password)
-            throw new Exception("Incorrect password!");
+            return Result.Fail<AuthenticationResults>(new[] { new InvalidCredentialsError() }); //can pass one or more errors
+
         //3. Create Jwt token
 
         var token = _jwtTokenGenerator.GenerateToken(user);
@@ -35,12 +41,12 @@ public class AuthenticationService : IAuthenticationService
         );
     }
 
-    public AuthenticationResults Register(string firstName, string lastName, string email, string password)
+    public Result<AuthenticationResults> Register(string firstName, string lastName, string email, string password)
     {
         // 1.valodate user does not exist
         var users = _userRepository.GetUserByEmail(email);
         if (users is not null)
-            throw new DublicateEmailException();
+            return Result.Fail<AuthenticationResults>(new[] { new DublicateEmailException() }); //can pass one or more errors
 
         // 2.Create a new user
 
@@ -56,7 +62,7 @@ public class AuthenticationService : IAuthenticationService
                 token
             );
         }
-        throw new Exception("Error creating user");
+        return Result.Fail<AuthenticationResults>(new[] {new UnExpectedError()}); //can pass one or more errors
 
     }
 

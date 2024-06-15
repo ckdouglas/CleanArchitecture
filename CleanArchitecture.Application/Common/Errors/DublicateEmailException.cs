@@ -3,12 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentResults;
 
-namespace CleanArchitecture.Application.Common.Errors
+
+namespace CleanArchitecture.Application.Common.Errors;
+
+public class DublicateEmailException : IError
 {
-    public class DublicateEmailException : Exception, IServiceException
+    public List<IError> Reasons => new List<IError>
     {
-        public HttpStatusCode StatusCode => HttpStatusCode.Conflict;
-        public string ErrorMessage => "Email already exists";
-    }
+        
+    };
+
+    public string Message => "Email already exists";
+
+    public Dictionary<string, object> Metadata => new Dictionary<string, object>
+    {
+        {"ErrorCode", "DUPLICATE_EMAIL"}
+    };
 }
