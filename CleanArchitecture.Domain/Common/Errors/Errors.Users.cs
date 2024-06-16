@@ -10,7 +10,7 @@ namespace CleanArchitecture.Domain.Common.Errors
                 code: "User.DuplicateEmail",
                 description: "Email already exists");
 
-            public static Error InvalidCredentials => Error.Validation(
+            public static Error InvalidCredentials => Error.Unauthorized(
                 code: "User.InvalidCredentials",
                 description: "Invalid credentials");
 

@@ -25,7 +25,7 @@ public class AuthenticationService : IAuthenticationService
     {
         //1. validate user exists
         if (_userRepository.GetUserByEmail(email) is not User user)
-            return Errors.Common.NotFound("User");
+            return new[] {  Errors.User.InvalidCredentials, Errors.Common.NotFound("User")};
         //2. validate password is correct
         if (user.Password != password)
             return Errors.User.InvalidCredentials;

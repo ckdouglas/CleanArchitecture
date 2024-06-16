@@ -11,20 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddControllers
     (
-    //Error handling with filters
-    //options => options.Filters.Add<ErrorHandlingFilterAttribute>()
     );
-
-
     builder.Services.AddSingleton<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 }
 
 var app = builder.Build();
 {
-    //Error handling with Middleware.
-    //app.UseMiddleware<ErrorHandlingMiddleware>();
-
-    app.UseExceptionHandler("/errors");
     app.UseHttpsRedirection();
     app.MapControllers();
 }

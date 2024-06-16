@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CleanArchitecture.Api.Controllers;
+using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -18,34 +20,34 @@ public class CustomProblemDetailsFactory : ProblemDetailsFactory
 
     public CustomProblemDetailsFactory(IOptions<ApiBehaviorOptions> options, IOptions<ProblemDetailsOptions>? problemDetailsOptions = null)
     {
-         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _configure = problemDetailsOptions?.Value?.CustomizeProblemDetails;
 
     }
     public override ProblemDetails CreateProblemDetails(HttpContext httpContext, int? statusCode = null, string? title = null, string? type = null, string? detail = null, string? instance = null)
     {
-       statusCode ??= 500;
+        statusCode ??= 500;
 
-       var problemDetails = new  ProblemDetails 
-       {
+        var problemDetails = new ProblemDetails
+        {
             Status = statusCode,
             Type = type,
             Detail = detail,
             Instance = instance
-       };
+        };
 
-       if(title != null)
-       {
+        if (title != null)
+        {
             //For validation problems details, don't overide the default title with null
             problemDetails.Title = title;
-       }
+        }
 
-       ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
+        ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
 
-       return problemDetails;
+        return problemDetails;
     }
 
-    public override ValidationProblemDetails CreateValidationProblemDetails( HttpContext httpContext, ModelStateDictionary modelStateDictionary, int? statusCode = null, string? title = null,string? type = null, string? detail = null,string? instance = null)
+    public override ValidationProblemDetails CreateValidationProblemDetails(HttpContext httpContext, ModelStateDictionary modelStateDictionary, int? statusCode = null, string? title = null, string? type = null, string? detail = null, string? instance = null)
     {
         ArgumentNullException.ThrowIfNull(modelStateDictionary);
 
@@ -73,7 +75,7 @@ public class CustomProblemDetailsFactory : ProblemDetailsFactory
     private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails, int statusCode)
     {
         problemDetails.Status ??= statusCode;
-        if(_options.ClientErrorMapping.TryGetValue(statusCode, out var clientErrorData))
+        if (_options.ClientErrorMapping.TryGetValue(statusCode, out var clientErrorData))
         {
             problemDetails.Title ??= clientErrorData.Title;
             problemDetails.Type ??= clientErrorData.Link;
@@ -81,12 +83,20 @@ public class CustomProblemDetailsFactory : ProblemDetailsFactory
 
         var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
 
-        if(traceId != null)
+        if (traceId != null)
         {
             problemDetails.Extensions["traceId"] = traceId;
         }
-        problemDetails.Extensions.Add("customProperty","customValue");
 
-         _configure?.Invoke(new() { HttpContext = httpContext!, ProblemDetails = problemDetails });
+
+        //custom properties can be added here to the problem details
+        var errors = httpContext?.Items[HttpContextItemKeys.Errors] as List<Error>;
+        if (errors != null)
+        {
+            problemDetails.Extensions.Add("errorCodes", errors.Select(e => e.Code));
+            problemDetails.Extensions.Add(HttpContextItemKeys.Errors, errors.Select(e => e.Description));
+        }
+
+        _configure?.Invoke(new() { HttpContext = httpContext!, ProblemDetails = problemDetails });
     }
 }
