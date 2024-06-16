@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 
-namespace CleanArchitecture.Api.Errors;
+namespace CleanArchitecture.Api.Common.Errors;
+
 public class CustomProblemDetailsFactory : ProblemDetailsFactory
 {
 
