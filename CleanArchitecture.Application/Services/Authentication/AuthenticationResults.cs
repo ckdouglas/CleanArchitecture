@@ -5,5 +5,4 @@ using System.Threading.Tasks;
 using CleanArchitecture.Domain.Entities;
 
 namespace CleanArchitecture.Application.Services.Authentication;
-public record AuthenticationResults(User User,
-                                    string Token);
+public record AuthenticationResults(User User, string Token);
