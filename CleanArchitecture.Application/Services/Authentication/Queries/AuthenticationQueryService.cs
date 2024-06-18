@@ -25,7 +25,7 @@ public class AuthenticationQueryService : IAuthenticationQueryService
     {
         //1. validate user exists
         if (_userRepository.GetUserByEmail(email) is not User user)
-            return new[] {  Errors.User.InvalidCredentials, Errors.Common.NotFound("User")};
+            return new[] { Errors.User.InvalidCredentials, Errors.Common.NotFound("User") };
         //2. validate password is correct
         if (user.Password != password)
             return Errors.User.InvalidCredentials;
@@ -39,28 +39,6 @@ public class AuthenticationQueryService : IAuthenticationQueryService
         );
     }
 
-    public ErrorOr<AuthenticationResults> Register(string firstName, string lastName, string email, string password)
-    {
-        // 1.valodate user does not exist
-        var users = _userRepository.GetUserByEmail(email);
-        if (users is not null)
-            return Errors.User.DuplicateEmail;
 
-        // 2.Create a new user
-        var user = _userRepository.Add(new User { FirstName = firstName, LastName = lastName, Email = email, Password = password });
-
-        //3. Create JWT token
-
-        if (user is not null)
-        {
-            var token = _jwtTokenGenerator.GenerateToken(user);
-            return new AuthenticationResults(
-                user,
-                token
-            );
-        }
-        return Errors.Common.UnExpectedError;
-
-    }
 
 }

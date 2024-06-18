@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CleanArchitecture.Application.Services;
+using ErrorOr;
 
-namespace CleanArchitecture.Application.Services.Authentication;
+namespace CleanArchitecture.Application.Services.Authentication.Commands;
 
 public interface IAuthenticationCommmandService
 {
-    AuthenticationResults Register(string FirstName, string LastName, string Email, string Password);
-    AuthenticationResults Login(string Email, string Password);
+    ErrorOr<AuthenticationResults> Register(string FirstName, string LastName, string Email, string Password);
 
 }

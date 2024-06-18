@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using ErrorOr;
 
 
-namespace CleanArchitecture.Application.Services.Authentication;
+namespace CleanArchitecture.Application.Services.Authentication.Queries;
 public interface IAuthenticationQueryService
 {
-    ErrorOr<AuthenticationResults> Register(string FirstName, string LastName, string Email, string Password);
     ErrorOr<AuthenticationResults> Login(string Email, string Password);
 
 }
