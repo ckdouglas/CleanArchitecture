@@ -149,7 +149,155 @@ cd ../CleanArchitecture.Infrastructure
  dotnet add reference ../CleanArchitecture.Domain/CleanArchitecture.Domain.csproj
 ```
 
----
+### **5. Script**
+
+```
+# Set solution and project names
+$solutionName = "CleanArchitectureApp"
+$basePath = "$PSScriptRoot\$solutionName"
+
+# Create the solution
+dotnet new sln -n $solutionName
+
+# Define projects
+$projects = @(
+    @{ Name = "CleanArchitecture.API"; Type = "webapi" },
+    @{ Name = "CleanArchitecture.Application"; Type = "classlib" },
+    @{ Name = "CleanArchitecture.Domain"; Type = "classlib" },
+    @{ Name = "CleanArchitecture.Infrastructure"; Type = "classlib" },
+    @{ Name = "CleanArchitecture.Shared"; Type = "classlib" },
+    @{ Name = "CleanArchitecture.Tests"; Type = "xunit" }
+)
+
+# Create projects
+foreach ($proj in $projects) {
+    $projPath = "$basePath\src\$($proj.Name)"
+    dotnet new $($proj.Type) -n $proj.Name -o $projPath
+    dotnet sln "$basePath\$solutionName.sln" add "$projPath\$($proj.Name).csproj"
+}
+
+# Add project references following Clean Architecture rules
+dotnet add "$basePath\src\CleanArchitecture.API\CleanArchitecture.API.csproj" reference `
+    "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj"
+dotnet add "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj" reference `
+    "$basePath\src\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj"
+dotnet add "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj" reference `
+    "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj"
+dotnet add "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj" reference `
+    "$basePath\src\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj"
+dotnet add "$basePath\src\CleanArchitecture.API\CleanArchitecture.API.csproj" reference `
+    "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj"
+dotnet add "$basePath\src\CleanArchitecture.Shared\CleanArchitecture.Shared.csproj" reference `
+    "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj"
+dotnet add "$basePath\src\CleanArchitecture.Shared\CleanArchitecture.Shared.csproj" reference `
+    "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj"
+
+# Define folder structure
+$folders = @(
+    # API Layer
+    "src/CleanArchitecture.API/Controllers",
+    "src/CleanArchitecture.API/Middleware",
+    "src/CleanArchitecture.API/Filters",
+    "src/CleanArchitecture.API/Extensions",
+    "src/CleanArchitecture.API/Routes",
+    "src/CleanArchitecture.API/Swagger",
+    "src/CleanArchitecture.API/GraphQL",
+
+    # Application Layer
+    "src/CleanArchitecture.Application/Interfaces",
+    "src/CleanArchitecture.Application/Services",
+    "src/CleanArchitecture.Application/DTOs",
+    "src/CleanArchitecture.Application/Requests",
+    "src/CleanArchitecture.Application/Responses",
+    "src/CleanArchitecture.Application/Validators",
+    "src/CleanArchitecture.Application/Features",
+    "src/CleanArchitecture.Application/Events",
+    "src/CleanArchitecture.Application/BackgroundJobs",
+    "src/CleanArchitecture.Application/Notifications",
+
+    # Domain Layer
+    "src/CleanArchitecture.Domain/Entities",
+    "src/CleanArchitecture.Domain/Enums",
+    "src/CleanArchitecture.Domain/Events",
+
+    # Infrastructure Layer
+    "src/CleanArchitecture.Infrastructure/Persistence/SQL",
+    "src/CleanArchitecture.Infrastructure/Persistence/MongoDB",
+    "src/CleanArchitecture.Infrastructure/Repositories",
+    "src/CleanArchitecture.Infrastructure/Logging",
+    "src/CleanArchitecture.Infrastructure/Caching",
+
+    # Shared Layer
+    "src/CleanArchitecture.Shared/Helpers",
+    "src/CleanArchitecture.Shared/Extensions",
+
+    # Tests
+    "src/CleanArchitecture.Tests/API",
+    "src/CleanArchitecture.Tests/Application",
+    "src/CleanArchitecture.Tests/Infrastructure",
+
+    # Build, Scripts, Deployment
+    "build",
+    "scripts",
+    "deployments/k8s",
+    "deployments/terraform"
+)
+
+foreach ($folder in $folders) {
+    $folderPath = "$basePath\$folder"
+    New-Item -ItemType Directory -Path $folderPath -Force
+}
+
+# Define essential files
+$files = @(
+    # API Layer
+    "src/CleanArchitecture.API/Controllers/UserController.cs",
+    "src/CleanArchitecture.API/Controllers/OrderController.cs",
+    "src/CleanArchitecture.API/Middleware/ExceptionHandlingMiddleware.cs",
+    "src/CleanArchitecture.API/Filters/ValidationFilter.cs",
+    "src/CleanArchitecture.API/Extensions/ServiceCollectionExtensions.cs",
+    "src/CleanArchitecture.API/Program.cs",
+    "src/CleanArchitecture.API/appsettings.json",
+
+    # Application Layer
+    "src/CleanArchitecture.Application/Interfaces/IUserRepository.cs",
+    "src/CleanArchitecture.Application/Services/UserService.cs",
+    "src/CleanArchitecture.Application/DTOs/UserDto.cs",
+    "src/CleanArchitecture.Application/Requests/CreateUserRequest.cs",
+    "src/CleanArchitecture.Application/Responses/UserResponse.cs",
+    "src/CleanArchitecture.Application/Validators/UserValidator.cs",
+
+    # Domain Layer
+    "src/CleanArchitecture.Domain/Entities/User.cs",
+    "src/CleanArchitecture.Domain/Enums/UserRole.cs",
+
+    # Infrastructure Layer
+    "src/CleanArchitecture.Infrastructure/Persistence/SQL/AppDbContext.cs",
+    "src/CleanArchitecture.Infrastructure/Repositories/UserRepository.cs",
+
+    # Shared Layer
+    "src/CleanArchitecture.Shared/Helpers/DateHelper.cs",
+    "src/CleanArchitecture.Shared/Extensions/ServiceCollectionExtensions.cs",
+
+    # Tests
+    "src/CleanArchitecture.Tests/API/UserControllerTests.cs",
+    "src/CleanArchitecture.Tests/Application/UserServiceTests.cs",
+    "src/CleanArchitecture.Tests/Infrastructure/UserRepositoryTests.cs",
+
+    # Docker & Deployment
+    "docker-compose.yml",
+    "README.md"
+)
+
+foreach ($file in $files) {
+    $filePath = "$basePath\$file"
+    New-Item -ItemType File -Path $filePath -Force
+}
+
+Write-Host "✅ Clean Architecture Solution Scaffolded Successfully!" -ForegroundColor Green
+```
+
+
 
 ## **Conclusion**
 
