@@ -1,6 +1,6 @@
 **Ultimate Clean Architecture Folder Structure**
 
-# *Overview*
+## Overview
 
 This document provides a comprehensive guide to structuring a .NET application using the Clean Architecture pattern. The folder structure is designed for scalability, maintainability, and flexibility. Each layer follows domain-driven design (DDD) principles and includes necessary components for a robust enterprise application.
 
@@ -55,6 +55,10 @@ This document provides a comprehensive guide to structuring a .NET application u
  ┃ ┃ ┃ ┣ 📜 UserService.cs
  ┃ ┃ ┣ 📂 DTOs                                 # Data Transfer Objects
  ┃ ┃ ┃ ┣ 📜 UserDto.cs
+ ┃ ┃ ┣ 📂 Requests                             # Request objects
+ ┃ ┃ ┃ ┣ 📜 CreateUserRequest.cs
+ ┃ ┃ ┣ 📂 Responses                            # Response objects
+ ┃ ┃ ┃ ┣ 📜 UserResponse.cs
  ┃ ┃ ┣ 📂 Validators                           # Request validation rules
  ┃ ┃ ┃ ┣ 📜 UserValidator.cs
  ┃ ┃ ┣ 📂 Features                             # CQRS Handlers
@@ -71,6 +75,8 @@ This document provides a comprehensive guide to structuring a .NET application u
  ┃ ┃ ┃ ┣ 📂 SQL                                # EF Core for PostgreSQL & SQL Server
  ┃ ┃ ┃ ┃ ┣ 📜 AppDbContext.cs
  ┃ ┃ ┃ ┣ 📂 MongoDB                            # MongoDB Repository Implementation
+ ┃ ┃ ┣ 📂 Repositories                         # Repository Implementations
+ ┃ ┃ ┃ ┣ 📜 UserRepository.cs
  ┃ ┃ ┣ 📂 Logging                              # Serilog, NLog
  ┃ ┃ ┣ 📂 Caching                              # Redis, Memory Cache
  ┃ ┣ 📂 CleanArchitecture.Shared               # Common Utilities & Extensions
@@ -93,7 +99,49 @@ This document provides a comprehensive guide to structuring a .NET application u
 ### **3. Layered Dependency Flow in Clean Architecture**
 
 ```
-[Presentation (API)] → [Application (Use Cases)] → [Domain (Core Business Logic)] ← [Infrastructure (Persistence & Services)]
+📦 Presentation (API)
+ ┣ 📜 Depends on Application Layer
+ ┗ 📜 Calls Use Cases & Business Logic
+
+📦 Application (Use Cases)
+ ┣ 📜 Depends on Domain Layer
+ ┣ 📜 Calls Repository & Service Interfaces
+ ┗ 📜 Implements Business Rules
+
+📦 Domain (Core Business Logic)
+ ┣ 📜 Independent of all other layers
+ ┣ 📜 Contains Entities, Enums, and Events
+ ┗ 📜 Defines Business Rules
+
+📦 Infrastructure (Persistence & Services)
+ ┣ 📜 Implements Repository & External Integrations
+ ┣ 📜 Provides Logging, Caching, and Messaging
+ ┗ 📜 Depends on Application Layer Contracts
+```
+
+### **4. Commands to Add Projects to the Solution and References**
+
+```sh
+# Add projects to the solution
+cd src
+ dotnet new sln -n CleanArchitectureApp
+ dotnet sln add CleanArchitecture.API/CleanArchitecture.API.csproj
+ dotnet sln add CleanArchitecture.Application/CleanArchitecture.Application.csproj
+ dotnet sln add CleanArchitecture.Domain/CleanArchitecture.Domain.csproj
+ dotnet sln add CleanArchitecture.Infrastructure/CleanArchitecture.Infrastructure.csproj
+ dotnet sln add CleanArchitecture.Shared/CleanArchitecture.Shared.csproj
+ dotnet sln add CleanArchitecture.Tests/CleanArchitecture.Tests.csproj
+
+# Add project references
+cd CleanArchitecture.API
+ dotnet add reference ../CleanArchitecture.Application/CleanArchitecture.Application.csproj
+ dotnet add reference ../CleanArchitecture.Infrastructure/CleanArchitecture.Infrastructure.csproj
+
+cd ../CleanArchitecture.Application
+ dotnet add reference ../CleanArchitecture.Domain/CleanArchitecture.Domain.csproj
+
+cd ../CleanArchitecture.Infrastructure
+ dotnet add reference ../CleanArchitecture.Domain/CleanArchitecture.Domain.csproj
 ```
 
 ---
@@ -103,5 +151,4 @@ This document provides a comprehensive guide to structuring a .NET application u
 This **Clean Architecture folder structure** is designed for **scalability, maintainability, and separation of concerns**. It supports **CQRS, DDD, Microservices**, and **enterprise-grade deployments** using **Kubernetes, Docker, and Terraform**.
 
 🚀 **This is the ultimate setup for large-scale .NET applications!**
-
 
