@@ -117,6 +117,11 @@ This document provides a comprehensive guide to structuring a .NET application u
  ┣ 📜 Implements Repository & External Integrations
  ┣ 📜 Provides Logging, Caching, and Messaging
  ┗ 📜 Depends on Application Layer Contracts
+
+📦 Shared (Common Utilities & Extensions)
+ ┣ 📜 Contains global utilities, helpers, DTOs, constants
+ ┣ 📜 Referenced by Api, Application & Infrastructure Layers
+ ┗ 📜 Should NOT include business logic
 ```
 
 ### **4. Commands to Add Projects to the Solution and References**
