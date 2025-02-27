@@ -152,149 +152,177 @@ cd ../CleanArchitecture.Infrastructure
 ### **5. Script**
 
 ```
-# Set solution and project names
-$solutionName = "CleanArchitectureApp"
-$basePath = "$PSScriptRoot\$solutionName"
+# Exit on error
+$ErrorActionPreference = "Stop"
 
-# Create the solution
-dotnet new sln -n $solutionName
-
-# Define projects
-$projects = @(
-    @{ Name = "CleanArchitecture.API"; Type = "webapi" },
-    @{ Name = "CleanArchitecture.Application"; Type = "classlib" },
-    @{ Name = "CleanArchitecture.Domain"; Type = "classlib" },
-    @{ Name = "CleanArchitecture.Infrastructure"; Type = "classlib" },
-    @{ Name = "CleanArchitecture.Shared"; Type = "classlib" },
-    @{ Name = "CleanArchitecture.Tests"; Type = "xunit" }
-)
-
-# Create projects
-foreach ($proj in $projects) {
-    $projPath = "$basePath\src\$($proj.Name)"
-    dotnet new $($proj.Type) -n $proj.Name -o $projPath
-    dotnet sln "$basePath\$solutionName.sln" add "$projPath\$($proj.Name).csproj"
+# Check if dotnet CLI is installed
+if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+    Write-Host "❌ Error: .NET SDK is not installed. Please install it and try again." -ForegroundColor Red
+    exit 1
 }
 
-# Add project references following Clean Architecture rules
-dotnet add "$basePath\src\CleanArchitecture.API\CleanArchitecture.API.csproj" reference `
-    "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj"
-dotnet add "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj" reference `
-    "$basePath\src\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj"
-dotnet add "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj" reference `
-    "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj"
-dotnet add "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj" reference `
-    "$basePath\src\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj"
-dotnet add "$basePath\src\CleanArchitecture.API\CleanArchitecture.API.csproj" reference `
-    "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj"
-dotnet add "$basePath\src\CleanArchitecture.Shared\CleanArchitecture.Shared.csproj" reference `
-    "$basePath\src\CleanArchitecture.Application\CleanArchitecture.Application.csproj"
-dotnet add "$basePath\src\CleanArchitecture.Shared\CleanArchitecture.Shared.csproj" reference `
-    "$basePath\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj"
+# Define solution name
+$SolutionName = "CleanArchitectureApp"
+$BasePath = Join-Path -Path (Get-Location) -ChildPath $SolutionName
+
+# Create the solution directory if it doesn't exist
+if (-not (Test-Path $BasePath)) {
+    New-Item -ItemType Directory -Path $BasePath | Out-Null
+}
+
+# Navigate to solution directory
+Set-Location -Path $BasePath
+
+# Create solution file
+dotnet new sln -n $SolutionName
+
+# Define projects
+$projects = @{
+    "CleanArchitecture.API"          = "webapi"
+    "CleanArchitecture.Application"  = "classlib"
+    "CleanArchitecture.Domain"       = "classlib"
+    "CleanArchitecture.Infrastructure" = "classlib"
+    "CleanArchitecture.Shared"       = "classlib"
+    "CleanArchitecture.Tests"        = "xunit"
+}
+
+# Create projects and add to solution
+foreach ($proj in $projects.Keys) {
+    $ProjectPath = Join-Path -Path $BasePath -ChildPath "src\$proj"
+    
+    if (-not (Test-Path $ProjectPath)) {
+        New-Item -ItemType Directory -Path $ProjectPath | Out-Null
+    }
+
+    dotnet new $projects[$proj] -n $proj -o $ProjectPath
+    dotnet sln "$BasePath\$SolutionName.sln" add "$ProjectPath\$proj.csproj"
+}
+
+# Add references based on Clean Architecture
+$references = @(
+    @{ From = "CleanArchitecture.API"; To = "CleanArchitecture.Application" }
+    @{ From = "CleanArchitecture.Application"; To = "CleanArchitecture.Domain" }
+    @{ From = "CleanArchitecture.Infrastructure"; To = "CleanArchitecture.Application" }
+    @{ From = "CleanArchitecture.Infrastructure"; To = "CleanArchitecture.Domain" }
+    @{ From = "CleanArchitecture.API"; To = "CleanArchitecture.Infrastructure" }
+    @{ From = "CleanArchitecture.Shared"; To = "CleanArchitecture.Application" }
+    @{ From = "CleanArchitecture.Shared"; To = "CleanArchitecture.Infrastructure" }
+)
+
+foreach ($ref in $references) {
+    dotnet add "src/$($ref.From)/$($ref.From).csproj" reference "src/$($ref.To)/$($ref.To).csproj"
+}
 
 # Define folder structure
 $folders = @(
-    # API Layer
-    "src/CleanArchitecture.API/Controllers",
-    "src/CleanArchitecture.API/Middleware",
-    "src/CleanArchitecture.API/Filters",
-    "src/CleanArchitecture.API/Extensions",
-    "src/CleanArchitecture.API/Routes",
-    "src/CleanArchitecture.API/Swagger",
-    "src/CleanArchitecture.API/GraphQL",
+    # API
+    "src/CleanArchitecture.API/Controllers"
+    "src/CleanArchitecture.API/Middleware"
+    "src/CleanArchitecture.API/Filters"
+    "src/CleanArchitecture.API/Extensions"
+    "src/CleanArchitecture.API/Routes"
+    "src/CleanArchitecture.API/Swagger"
+    "src/CleanArchitecture.API/GraphQL"
 
-    # Application Layer
-    "src/CleanArchitecture.Application/Interfaces",
-    "src/CleanArchitecture.Application/Services",
-    "src/CleanArchitecture.Application/DTOs",
-    "src/CleanArchitecture.Application/Requests",
-    "src/CleanArchitecture.Application/Responses",
-    "src/CleanArchitecture.Application/Validators",
-    "src/CleanArchitecture.Application/Features",
-    "src/CleanArchitecture.Application/Events",
-    "src/CleanArchitecture.Application/BackgroundJobs",
-    "src/CleanArchitecture.Application/Notifications",
+    # Application
+    "src/CleanArchitecture.Application/Interfaces"
+    "src/CleanArchitecture.Application/Services"
+    "src/CleanArchitecture.Application/DTOs"
+    "src/CleanArchitecture.Application/Requests"
+    "src/CleanArchitecture.Application/Responses"
+    "src/CleanArchitecture.Application/Validators"
+    "src/CleanArchitecture.Application/Features"
+    "src/CleanArchitecture.Application/Events"
+    "src/CleanArchitecture.Application/BackgroundJobs"
+    "src/CleanArchitecture.Application/Notifications"
 
-    # Domain Layer
-    "src/CleanArchitecture.Domain/Entities",
-    "src/CleanArchitecture.Domain/Enums",
-    "src/CleanArchitecture.Domain/Events",
+    # Domain
+    "src/CleanArchitecture.Domain/Entities"
+    "src/CleanArchitecture.Domain/Enums"
+    "src/CleanArchitecture.Domain/Events"
 
-    # Infrastructure Layer
-    "src/CleanArchitecture.Infrastructure/Persistence/SQL",
-    "src/CleanArchitecture.Infrastructure/Persistence/MongoDB",
-    "src/CleanArchitecture.Infrastructure/Repositories",
-    "src/CleanArchitecture.Infrastructure/Logging",
-    "src/CleanArchitecture.Infrastructure/Caching",
+    # Infrastructure
+    "src/CleanArchitecture.Infrastructure/Persistence/SQL"
+    "src/CleanArchitecture.Infrastructure/Persistence/MongoDB"
+    "src/CleanArchitecture.Infrastructure/Repositories"
+    "src/CleanArchitecture.Infrastructure/Logging"
+    "src/CleanArchitecture.Infrastructure/Caching"
 
-    # Shared Layer
-    "src/CleanArchitecture.Shared/Helpers",
-    "src/CleanArchitecture.Shared/Extensions",
+    # Shared
+    "src/CleanArchitecture.Shared/Helpers"
+    "src/CleanArchitecture.Shared/Extensions"
 
     # Tests
-    "src/CleanArchitecture.Tests/API",
-    "src/CleanArchitecture.Tests/Application",
-    "src/CleanArchitecture.Tests/Infrastructure",
+    "src/CleanArchitecture.Tests/API"
+    "src/CleanArchitecture.Tests/Application"
+    "src/CleanArchitecture.Tests/Infrastructure"
 
     # Build, Scripts, Deployment
-    "build",
-    "scripts",
-    "deployments/k8s",
+    "build"
+    "scripts"
+    "deployments/k8s"
     "deployments/terraform"
 )
 
+# Create directories
 foreach ($folder in $folders) {
-    $folderPath = "$basePath\$folder"
-    New-Item -ItemType Directory -Path $folderPath -Force
+    $FolderPath = Join-Path -Path $BasePath -ChildPath $folder
+    if (-not (Test-Path $FolderPath)) {
+        New-Item -ItemType Directory -Path $FolderPath | Out-Null
+    }
 }
 
 # Define essential files
 $files = @(
-    # API Layer
-    "src/CleanArchitecture.API/Controllers/UserController.cs",
-    "src/CleanArchitecture.API/Controllers/OrderController.cs",
-    "src/CleanArchitecture.API/Middleware/ExceptionHandlingMiddleware.cs",
-    "src/CleanArchitecture.API/Filters/ValidationFilter.cs",
-    "src/CleanArchitecture.API/Extensions/ServiceCollectionExtensions.cs",
-    "src/CleanArchitecture.API/Program.cs",
-    "src/CleanArchitecture.API/appsettings.json",
+    # API
+    "src/CleanArchitecture.API/Controllers/UserController.cs"
+    "src/CleanArchitecture.API/Controllers/OrderController.cs"
+    "src/CleanArchitecture.API/Middleware/ExceptionHandlingMiddleware.cs"
+    "src/CleanArchitecture.API/Filters/ValidationFilter.cs"
+    "src/CleanArchitecture.API/Extensions/ServiceCollectionExtensions.cs"
+    "src/CleanArchitecture.API/Program.cs"
+    "src/CleanArchitecture.API/appsettings.json"
 
-    # Application Layer
-    "src/CleanArchitecture.Application/Interfaces/IUserRepository.cs",
-    "src/CleanArchitecture.Application/Services/UserService.cs",
-    "src/CleanArchitecture.Application/DTOs/UserDto.cs",
-    "src/CleanArchitecture.Application/Requests/CreateUserRequest.cs",
-    "src/CleanArchitecture.Application/Responses/UserResponse.cs",
-    "src/CleanArchitecture.Application/Validators/UserValidator.cs",
+    # Application
+    "src/CleanArchitecture.Application/Interfaces/IUserRepository.cs"
+    "src/CleanArchitecture.Application/Services/UserService.cs"
+    "src/CleanArchitecture.Application/DTOs/UserDto.cs"
+    "src/CleanArchitecture.Application/Requests/CreateUserRequest.cs"
+    "src/CleanArchitecture.Application/Responses/UserResponse.cs"
+    "src/CleanArchitecture.Application/Validators/UserValidator.cs"
 
-    # Domain Layer
-    "src/CleanArchitecture.Domain/Entities/User.cs",
-    "src/CleanArchitecture.Domain/Enums/UserRole.cs",
+    # Domain
+    "src/CleanArchitecture.Domain/Entities/User.cs"
+    "src/CleanArchitecture.Domain/Enums/UserRole.cs"
 
-    # Infrastructure Layer
-    "src/CleanArchitecture.Infrastructure/Persistence/SQL/AppDbContext.cs",
-    "src/CleanArchitecture.Infrastructure/Repositories/UserRepository.cs",
+    # Infrastructure
+    "src/CleanArchitecture.Infrastructure/Persistence/SQL/AppDbContext.cs"
+    "src/CleanArchitecture.Infrastructure/Repositories/UserRepository.cs"
 
-    # Shared Layer
-    "src/CleanArchitecture.Shared/Helpers/DateHelper.cs",
-    "src/CleanArchitecture.Shared/Extensions/ServiceCollectionExtensions.cs",
+    # Shared
+    "src/CleanArchitecture.Shared/Helpers/DateHelper.cs"
+    "src/CleanArchitecture.Shared/Extensions/ServiceCollectionExtensions.cs"
 
     # Tests
-    "src/CleanArchitecture.Tests/API/UserControllerTests.cs",
-    "src/CleanArchitecture.Tests/Application/UserServiceTests.cs",
-    "src/CleanArchitecture.Tests/Infrastructure/UserRepositoryTests.cs",
+    "src/CleanArchitecture.Tests/API/UserControllerTests.cs"
+    "src/CleanArchitecture.Tests/Application/UserServiceTests.cs"
+    "src/CleanArchitecture.Tests/Infrastructure/UserRepositoryTests.cs"
 
     # Docker & Deployment
-    "docker-compose.yml",
+    "docker-compose.yml"
     "README.md"
 )
 
+# Create empty files
 foreach ($file in $files) {
-    $filePath = "$basePath\$file"
-    New-Item -ItemType File -Path $filePath -Force
+    $FilePath = Join-Path -Path $BasePath -ChildPath $file
+    if (-not (Test-Path $FilePath)) {
+        New-Item -ItemType File -Path $FilePath | Out-Null
+    }
 }
 
-Write-Host "✅ Clean Architecture Solution Scaffolded Successfully!" -ForegroundColor Green
+Write-Host "✅ Clean Architecture Solution Scaffolded Successfully on Windows!" -ForegroundColor Green
+
 ```
 
 
